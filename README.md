@@ -8,7 +8,7 @@
 - *Method_Scripts* folder: Script implementations of DB-VMD and VMD
 - *Experiments* folder: Experiment scripts about **tone seperation** and **noise robustness**. Also, a script named **visualize_methods.m** is added for visualizing DB-VMD and VMD
 
-User should run the scripts included in the *Experiments* folder.
+**_User should run the scripts included in the *Experiments* folder._**
 
 
 ### VMD implemenation
