@@ -11,3 +11,7 @@
 User should run the scripts included in the *Experiments* folder.
 
 VMD [1]: Dominique Zosso (2021). Variational Mode Decomposition [MATLAB Central File Exchange](https://www.mathworks.com/matlabcentral/fileexchange/44765-variational-mode-decomposition).
+
+The corresponding paper:
+
+[1] [K. Dragomiretskiy and D. Zosso, "Variational Mode Decomposition," in IEEE Transactions on Signal Processing, vol. 62, no. 3, pp. 531-544, Feb.1, 2014, doi: 10.1109/TSP.2013.2288675](https://ieeexplore.ieee.org/abstract/document/6655981).
