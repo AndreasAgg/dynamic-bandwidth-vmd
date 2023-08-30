@@ -11,7 +11,7 @@
 ### User should run the scripts included in the *Experiments* folder.
 
 
-#### Acknowledgments: The VMD Matlab code was taken from the publicly available MATLAB Central File Exchange page below:
+**Acknowledgments: The VMD Matlab code was taken from the publicly available MATLAB Central File Exchange page below:**
 VMD [1]: Dominique Zosso (2021). Variational Mode Decomposition [MATLAB Central File Exchange](https://www.mathworks.com/matlabcentral/fileexchange/44765-variational-mode-decomposition).
 
 The corresponding paper:
