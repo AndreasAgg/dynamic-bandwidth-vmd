@@ -10,6 +10,8 @@
 
 User should run the scripts included in the *Experiments* folder.
 
+
+### VMD implemenation
 VMD [1]: Dominique Zosso (2021). Variational Mode Decomposition [MATLAB Central File Exchange](https://www.mathworks.com/matlabcentral/fileexchange/44765-variational-mode-decomposition).
 
 The corresponding paper:
