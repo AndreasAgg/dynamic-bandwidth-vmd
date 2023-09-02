@@ -16,5 +16,5 @@ function visualizationFunction(centralFreqs, freqs, positiveSpectrum, BW_factor,
     xlabel("Normalized positive frequencies")
     ylabel("Normalized Magnitude")
     title("Visualization of " + method)
-    pause(0.001)
+    pause(0.1)
 end
