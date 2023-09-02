@@ -7,7 +7,6 @@ addpath('Method_Scripts')
 cd(init_pwd)
 
 %% Preparations and parameters definition
-
 clear; clc; close all
 
 snr_arr = 20:-2:10;

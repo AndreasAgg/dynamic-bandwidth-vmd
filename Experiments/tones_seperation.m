@@ -6,7 +6,6 @@ cd ..
 addpath('Method_Scripts') 
 cd(init_pwd)
 
-
 %% Preparation and parameters definition
 clear; close all; clc;
 

@@ -26,7 +26,6 @@ function [u, u_hat, omega] = VMD(signal, alpha, tau, K, DC, init, tol, opts)
 % u       - the collection of decomposed modes
 % u_hat   - spectra of the modes
 % omega   - estimated mode center-frequencies
-
 %% Check inputs
 arguments
     signal (1,:) double
