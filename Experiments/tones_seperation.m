@@ -7,39 +7,45 @@ addpath('Method_Scripts')
 cd(init_pwd)
 
 
-%% Preparation 
-clear;
-close all;
-clc;
+%% Preparation and parameters definition
+clear; close all; clc;
 
-% Time Domain 0 to N
-N = 800;
-Fs = N;
-t = (1:N)/N;
+N = 800; % Signal length
+t = (1:N)/N; % Time vector
 
+% Frequencies array
 start_freq = 1;
 step = 3;
 f1_arr = start_freq : step : N/2;
 
+% Initialization of Success Rate arrays
 SR_arr_DB_VMD = ones(length(f1_arr), length(f1_arr), 3);
 SR_arr_VMD = ones(length(f1_arr), length(f1_arr), 3);
 
+% Rho array
 rho_arr = [1/4, 1, 4];
 
-alpha = 1000;
-K = 2;
-tau_ab = 0.1;
-tau_l = 0.1;
-DC = 0;
-init = 3;
-tol = 1e-7;
-%% Calculation of error array DB-VMD
+% Parameters
+alpha = 1000;   % VMD bandwidth factor
+K = 2;          % Components' count
+tau_ab = 0.1;   % Bandwidth rate of change (DB-VMD)
+tau_l = 0.1;    % Data-fidelity factor
+DC = 0;         % DC impose (0 for none)
+init = 3;       % Central frequencies initialization
+tol = 1e-7;     % Stopping criteria tolerance
+%% Tone seperation experiment
 f1_it = 1;
 for v_1 = f1_arr
+    
+    % Printing progress
+    fprintf("Progress: %d/%d\n", f1_it, length(f1_arr));
+    
     f2_it = 1;
     for v_2 = start_freq : step : v_1
         rho_it = 1;
         for rho = rho_arr
+            
+            % Signal generation
             a1 = randi(3)*rand(1,1);
             a2 = rho * a1;
             x_1 = a1 * (cos(2*pi*v_1*t));
@@ -49,18 +55,25 @@ for v_1 = f1_arr
             fsub{2} = x_2;
             x = x_1 + x_2;
 
+            % DB-VMD applied
             [u, ~, omega] = DB_VMD(x, tau_ab, tau_l, K, DC, init, tol);
             [~, sortIndex] = sort(omega(end,:), 'descend');
             u = u(sortIndex,:);
+            
+            % DB-VMD Success rate 
             corr_arr = nan(K,1);
             for k=1:K
                 corr_arr(k) = abs(xcorr(fsub{k},u(k,:),0,'normalized'));
             end
             SR_arr_DB_VMD(end-f2_it+1, f1_it, rho_it) = mean(corr_arr);
             
+            
+            % VMD applied
             [u, ~, omega] = VMD(x, alpha, tau_l, K, DC, init, tol);
             [~, sortIndex] = sort(omega(end,:), 'descend');
             u = u(sortIndex,:);
+            
+            % VMD Success rate 
             corr_arr = nan(K,1);
             for k=1:K
                 corr_arr(k) = abs(xcorr(fsub{k},u(k,:),0,'normalized'));
@@ -73,7 +86,7 @@ for v_1 = f1_arr
     end
     f1_it = f1_it + 1;
 end
-%% Visualization
+%% Results
 
 for i=1:length(rho_arr)
     figure("Name", 'DB-VMD: rho=' + sprintf("%s", num2str(rho_arr(i)))); 
