@@ -112,7 +112,7 @@ for i=1:length(tau_l_arr)
     figure("Name", sprintf("tau_l = %.2f", tau_l_arr(i)))
     semilogx(snr_arr, SR_DB_vmd_arr(:, i), 'k-')
     hold on
-    semilogx(snr_arr, SR_vmd_arr(:, i), 'k:')
+    semilogx(snr_arr, SR_vmd_arr(:, i), 'b:')
     xlabel("SNR", 'FontSize', 15)
     ylabel("Success Rate", 'FontSize', 20)
     legend("DB-VMD","VMD", "Location", "Best", 'FontSize',12)
