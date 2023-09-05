@@ -93,18 +93,18 @@ for i=1:length(rho_arr)
     title("DB-VMD", "Interpreter", "latex", 'FontSize', 30)
     xlabel("$v_1$", "Interpreter", "latex", 'FontSize', 20)
     ylabel("$v_2 < v_1$", "Interpreter", "latex", 'FontSize', 20)
-    colormap gray
+    colormap hot
     colorbar
     caxis([0.3, 1]);
-    colorbar off
+    colorbar
     
     figure("Name", 'VMD: rho=' + sprintf("%s", num2str(rho_arr(i)))); 
     imshow(SR_arr_VMD(:,:,i), 'InitialMagnification', 'fit')
     title("VMD", "Interpreter", "latex", 'FontSize', 30)
     xlabel("$v_1$", "Interpreter", "latex", 'FontSize', 20)
     ylabel("$v_2 < v_1$", "Interpreter", "latex", 'FontSize', 20)
-    colormap gray
+    colormap hot
     caxis([0.3, 1]);
-    colorbar off
+    colorbar
 
 end
