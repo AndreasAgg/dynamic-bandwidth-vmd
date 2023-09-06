@@ -45,10 +45,10 @@ for v_1 = f1_arr
         for rho = rho_arr
             
             % Signal generation
-            a1 = randi(3)*rand(1,1);
+            a1 = randi(3) * rand(1, 1);
             a2 = rho * a1;
-            x_1 = a1 * (cos(2*pi*v_1*t));
-            x_2 = a2 * (cos(2*pi*v_2*t));
+            x_1 = a1 * (cos(2 * pi * v_1 * t));
+            x_2 = a2 * (cos(2 * pi * v_2 * t));
             fsub = {};
             fsub{1} = x_1;
             fsub{2} = x_2;
@@ -56,28 +56,28 @@ for v_1 = f1_arr
 
             % DB-VMD applied
             [u, ~, omega] = DB_VMD(x, tau_ab, tau_l, K, DC, init, tol);
-            [~, sortIndex] = sort(omega(end,:), 'descend');
-            u = u(sortIndex,:);
+            [~, sortIndex] = sort(omega(end, :), 'descend');
+            u = u(sortIndex, :);
             
             % DB-VMD Success rate 
-            corr_arr = nan(K,1);
+            corr_arr = nan(K, 1);
             for k=1:K
-                corr_arr(k) = abs(xcorr(fsub{k},u(k,:),0,'normalized'));
+                corr_arr(k) = abs(xcorr(fsub{k}, u(k,:), 0, 'normalized'));
             end
-            SR_arr_DB_VMD(end-f2_it+1, f1_it, rho_it) = mean(corr_arr);
+            SR_arr_DB_VMD(end - f2_it + 1, f1_it, rho_it) = mean(corr_arr);
             
             
             % VMD applied
             [u, ~, omega] = VMD(x, alpha, tau_l, K, DC, init, tol);
-            [~, sortIndex] = sort(omega(end,:), 'descend');
-            u = u(sortIndex,:);
+            [~, sortIndex] = sort(omega(end, :), 'descend');
+            u = u(sortIndex, :);
             
             % VMD Success rate 
-            corr_arr = nan(K,1);
+            corr_arr = nan(K, 1);
             for k=1:K
-                corr_arr(k) = abs(xcorr(fsub{k},u(k,:),0,'normalized'));
+                corr_arr(k) = abs(xcorr(fsub{k}, u(k,:), 0, 'normalized'));
             end
-            SR_arr_VMD(end-f2_it+1, f1_it, rho_it) = mean(corr_arr);
+            SR_arr_VMD(end - f2_it + 1, f1_it, rho_it) = mean(corr_arr);
 
             rho_it = rho_it + 1;
         end
@@ -89,22 +89,21 @@ end
 
 for i=1:length(rho_arr)
     figure("Name", 'DB-VMD: rho=' + sprintf("%s", num2str(rho_arr(i)))); 
-    imshow(SR_arr_DB_VMD(:,:,i), 'InitialMagnification', 'fit')
+    imshow(SR_arr_DB_VMD(:, :, i), 'InitialMagnification', 'fit')
     title("DB-VMD", "Interpreter", "latex", 'FontSize', 30)
     xlabel("$v_1$", "Interpreter", "latex", 'FontSize', 20)
     ylabel("$v_2 < v_1$", "Interpreter", "latex", 'FontSize', 20)
     colormap hot
-    colorbar
     caxis([0.3, 1]);
     colorbar
     
     figure("Name", 'VMD: rho=' + sprintf("%s", num2str(rho_arr(i)))); 
-    imshow(SR_arr_VMD(:,:,i), 'InitialMagnification', 'fit')
+    imshow(SR_arr_VMD(:, :, i), 'InitialMagnification', 'fit')
     title("VMD", "Interpreter", "latex", 'FontSize', 30)
     xlabel("$v_1$", "Interpreter", "latex", 'FontSize', 20)
     ylabel("$v_2 < v_1$", "Interpreter", "latex", 'FontSize', 20)
     colormap hot
     caxis([0.3, 1]);
-    colorbar
+    colorbar 
 
 end
