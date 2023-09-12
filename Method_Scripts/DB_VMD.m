@@ -25,6 +25,11 @@ function [u, u_hat, omega] = DB_VMD(signal, tau_ab, tau_l, K, DC, init, tol, opt
 % u       - the collection of decomposed modes
 % u_hat   - spectra of the modes
 % omega   - estimated mode center-frequencies
+%
+% 	Acknowledgments: The DB-VMD code has been developed by modifying the variational mode decomposition code that has 
+%                 been made public at the following link. 
+%                 https://www.mathworks.com/matlabcentral/fileexchange/44765-variational-mode-decomposition
+%                 by K. Dragomiretskiy, D. Zosso.
 %% Check inputs
 arguments
     signal (1,:) double
