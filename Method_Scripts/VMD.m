@@ -18,8 +18,8 @@ function [u, u_hat, omega] = VMD(signal, alpha, tau, K, DC, init, tol, opts)
 % tol     - tolerance of convergence criterion; typically around 1e-6
 % opts    - Options used with the "'Name', Value" format
 %               VMD(..., 'viz_end', Value1, 'viz_progress', Value2)
-%                   viz_progress: visualization while the algorithm is in progress (0 or 1)
-%                   viz_end: visualization after the end of the algorithm (0 or 1)
+%                   viz_progress: visualization while the algorithm is in progress (0 or 1) (default 0)
+%                   viz_end: visualization after the end of the algorithm (0 or 1) (default 0)
 %
 % Output:
 % -------
