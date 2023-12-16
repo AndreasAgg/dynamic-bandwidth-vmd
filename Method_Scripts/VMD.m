@@ -33,6 +33,7 @@ function [u, u_hat, omega] = VMD(signal, alpha, tau, K, DC, init, tol, opts)
 % on Signal Processing (in press)
 % please check here for update reference: 
 %          http://dx.doi.org/10.1109/TSP.2013.2288675
+
 %% Check inputs
 arguments
     signal (1,:) double
