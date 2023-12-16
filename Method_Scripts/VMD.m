@@ -66,12 +66,12 @@ f_mirror(N/2+1:3*N/2) = signal;
 f_mirror(3*N/2+1:2*N) = signal(N:-1:N/2+1);
 ext_signal = f_mirror;
 
-% Time Domain 0 to T (of mirrored signal)
+% Time Domain 0 to 1 (of mirrored signal)
 N_ext = length(ext_signal);
 t = (1:N_ext)/N_ext;
 
 % Spectral Domain discretization
-freqs = t-0.5-1/N_ext; % [-0.5, ... , 0.495]
+freqs = t-0.5-1/N_ext; 
 
 % Maximum number of iterations (if not converged yet, then it won't anyway)
 max_it = 1000;
