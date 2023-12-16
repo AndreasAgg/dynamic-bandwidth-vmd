@@ -27,7 +27,7 @@ function [u, u_hat, omega] = VMD(signal, alpha, tau, K, DC, init, tol, opts)
 % u_hat   - spectra of the modes
 % omega   - estimated mode center-frequencies
 %
-% When using this code, please do cite our paper:
+% When using this code, please do cite the paper:
 % -----------------------------------------------
 % K. Dragomiretskiy, D. Zosso, Variational Mode Decomposition, IEEE Trans.
 % on Signal Processing (in press)
