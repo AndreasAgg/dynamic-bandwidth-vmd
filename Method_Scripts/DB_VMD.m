@@ -16,20 +16,16 @@ function [u, u_hat, omega] = DB_VMD(signal, tau_ab, tau_l, K, DC, init, tol, opt
 % tol       - tolerance of convergence criterion; typically around 1e-6
 % opts      - Options used with the "'Name', Value" format
 %               DB_VMD(..., 'att', Value1, 'viz_end', Value2, 'viz_progress', Value3)
-%                   att: attenuation for the definiation of filters' bandwidth - in decibells (dB)
-%                   viz_progress: visualization while the algorithm is in progress
-%                   viz_end: visualization after the end of the algorithm 
+%                   att: attenuation (in dB) for the definiation of filters' bandwidth (default -20dB)
+%                   viz_progress: visualization while the algorithm is in progress (0 or 1) (default 0)
+%                   viz_end: visualization after the end of the algorithm (0 or 1) (default 0)
 %
 % Output:
 % -----------------------------------------------
 % u       - the collection of decomposed modes
 % u_hat   - spectra of the modes
 % omega   - estimated mode center-frequencies
-%
-% 	Acknowledgments: The DB-VMD code has been developed by modifying the variational mode decomposition code that has 
-%                 been made public at the following link. 
-%                 https://www.mathworks.com/matlabcentral/fileexchange/44765-variational-mode-decomposition
-%                 by K. Dragomiretskiy, D. Zosso.
+
 %% Check inputs
 arguments
     signal (1,:) double

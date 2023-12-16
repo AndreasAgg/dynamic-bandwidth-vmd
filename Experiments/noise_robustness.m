@@ -10,7 +10,7 @@ cd(init_pwd)
 clear; clc; close all
 
 snr_arr = 20:-2:10;
-tau_l_arr = [0.1, 0.5];
+tau_l_arr = [0.1]; 
 
 max_it = 500; % Number of iterations
 
@@ -70,7 +70,7 @@ for i_tau_l = 1:length(tau_l_arr)
             end
             [~, sortIndex] = sort(omega_arr);
             fsub = fsub(sortIndex);
-            s = awgn(s, snr_arr(i_snr),"measured"); % Add noise
+            s = awgn(s, snr_arr(i_snr), "measured"); % Add noise
             
             % DB-VMD applied
             [u, ~, omega] = DB_VMD(s, tau_ab, tau_l, K, DC, init, tol);

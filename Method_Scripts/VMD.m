@@ -18,8 +18,8 @@ function [u, u_hat, omega] = VMD(signal, alpha, tau, K, DC, init, tol, opts)
 % tol     - tolerance of convergence criterion; typically around 1e-6
 % opts    - Options used with the "'Name', Value" format
 %               VMD(..., 'viz_end', Value1, 'viz_progress', Value2)
-%                   viz_progress: visualization while the algorithm is in progress
-%                   viz_end: visualization after the end of the algorithm 
+%                   viz_progress: visualization while the algorithm is in progress (0 or 1)
+%                   viz_end: visualization after the end of the algorithm (0 or 1)
 %
 % Output:
 % -------
@@ -27,17 +27,12 @@ function [u, u_hat, omega] = VMD(signal, alpha, tau, K, DC, init, tol, opts)
 % u_hat   - spectra of the modes
 % omega   - estimated mode center-frequencies
 %
-% When using this code, please do cite this paper:
+% When using this code, please do cite our paper:
 % -----------------------------------------------
 % K. Dragomiretskiy, D. Zosso, Variational Mode Decomposition, IEEE Trans.
 % on Signal Processing (in press)
 % please check here for update reference: 
 %          http://dx.doi.org/10.1109/TSP.2013.2288675
-%
-% 	Acknowledgments: This VMD code has been developed by modifying the variational mode decomposition code that has 
-%                 been made public at the following link. 
-%                 https://www.mathworks.com/matlabcentral/fileexchange/44765-variational-mode-decomposition
-%                 by K. Dragomiretskiy, D. Zosso.
 %% Check inputs
 arguments
     signal (1,:) double
