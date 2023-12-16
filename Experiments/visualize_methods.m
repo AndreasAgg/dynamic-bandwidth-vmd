@@ -65,7 +65,7 @@ else
     % BW factor for VMD
     alpha = 1000;
 end
-%% Run actual VMD code
+%% Run DB-VMD or VMD code
 if strcmp(method, "DB-VMD")
     [u, u_hat, omega] = DB_VMD(x, tau_ab, tau_l, K, DC, init, tol, "viz_progress", 1);
 else
