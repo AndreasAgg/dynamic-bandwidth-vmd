@@ -15,7 +15,7 @@ if ~all(strcmp(method, "VMD") | strcmp(method, "DB-VMD"))
     error("method must be VMD or DB-VMD")
 end
 
-% Time Domain 0 to T
+% Time Domain 0 to 1
 N = 1000;
 Ts = 1/N;
 t = (1:N)/N;
