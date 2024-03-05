@@ -1,3 +1,9 @@
+%% Tones separation script for Dynamic Bandwidth VMD
+% -------------------------------------------------------------------------
+% Written by:
+% Andreas G. Angelou, aangelou@auth.gr
+% Tested with MATLAB R2020b
+% -------------------------------------------------------------------------
 %% Add "Method_Scripts" path
 % Method_Scripts is the folder where DB-VMD and VMD are implemeneted 
 

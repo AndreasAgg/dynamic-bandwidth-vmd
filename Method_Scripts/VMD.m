@@ -3,7 +3,9 @@ function [u, u_hat, omega] = VMD(signal, alpha, tau, K, DC, init, tol, opts)
 % Authors: Konstantin Dragomiretskiy and Dominique Zosso
 % zosso@math.ucla.edu --- http://www.math.ucla.edu/~zosso
 % Initial release 2013-12-12 (c) 2013
-%
+% 
+% The code of VMD (initial release) has been modified by Andreas Angelou.
+% 
 % Input and Parameters:
 % ---------------------
 % signal  - the time domain signal (1D) to be decomposed
@@ -27,7 +29,7 @@ function [u, u_hat, omega] = VMD(signal, alpha, tau, K, DC, init, tol, opts)
 % u_hat   - spectra of the modes
 % omega   - estimated mode center-frequencies
 %
-% When using this code, please do cite the paper:
+% When using this code, please do cite this paper:
 % -----------------------------------------------
 % K. Dragomiretskiy, D. Zosso, Variational Mode Decomposition, IEEE Trans.
 % on Signal Processing (in press)
@@ -47,7 +49,6 @@ arguments
     opts.viz_progress int8 = 0
 end
 
-
 if ~all(opts.viz_end == 0 | opts.viz_end == 1)
     error("viz_end must be 0 or 1")
 end
@@ -56,7 +57,7 @@ if ~all(opts.viz_progress == 0 | opts.viz_progress == 1)
     error("viz_progress must be 0 or 1")
 end
 
-%% ---------- Preparations
+%% Preparations
 % Period and sampling frequency of input signal
 N = length(signal);
 
@@ -91,15 +92,15 @@ u_hat_plus = zeros(max_it, length(freqs), K);
 omega_plus = nan(max_it, K);
 omega_plus(1,:) = initializeCentralFreqs(init, K, f_hat_plus, freqs);
 
-% if DC mode imposed, set its omega to 0
+% If DC mode imposed, set its omega to 0
 if DC
     omega_plus(1,1) = 0;
 end
 
-% start with empty dual variables
+% Start with empty dual variables
 lambda_hat = zeros(max_it, length(freqs));
 
-% other inits
+% Other inits
 uDiff = tol+eps; % update step
 it = 1; % loop counter
 sum_uk = 0; % accumulator
@@ -110,7 +111,7 @@ if opts.viz_progress || opts.viz_end
     figure('Name', 'Visualization ' + method)
 end
 
-%% ----------- Main loop for iterative updates
+%% Main loop for iterative updates
 while ( uDiff > tol &&  it < max_it ) % not converged and below iterations limit
     
     % Update first mode accumulator
@@ -165,7 +166,7 @@ if opts.viz_end
     fprintf("VMD iterations: %d\n", it)
 end
 
-%% ------ Postprocessing and cleanup
+%% Postprocessing and cleanup
 
 % Discard empty space if converged early
 max_it = min(max_it,it);
@@ -194,7 +195,7 @@ end
 
 end
 
-%% Functions 
+%% Functions for center frequency initialization
 function centralFreqs = initializeCentralFreqs(init, K, x, f)
 % Initialization of central frequencies
 switch init

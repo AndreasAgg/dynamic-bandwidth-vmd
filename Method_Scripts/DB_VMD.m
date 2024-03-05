@@ -1,6 +1,7 @@
 function [u, u_hat, omega] = DB_VMD(signal, tau_ab, tau_l, K, DC, init, tol, opts)
 % Dyanmic Bandwidth Variational Mode Decomposition
 % Authors: Andreas Angelou, Georgios Apostolidis, Leontios Hadjileontiadis
+% Code developer: Andreas Angelou
 % 
 % Input and Parameters:
 % -----------------------------------------------
@@ -53,17 +54,20 @@ if ~all(opts.viz_progress == 0 | opts.viz_progress == 1)
 end
 
 %% Preparations
+
+% Convert attenuation from dB to linear
 att_linear = db2mag(opts.att);
 
 % Period and sampling frequency of input signal
 N = length(signal);
 Fs = N;
 
+% Produce mirrored signal
 f_mirror = nan(2*N, 1);
 f_mirror(1:N/2) = signal(N/2:-1:1);
 f_mirror(N/2+1:3*N/2) = signal;
 f_mirror(3*N/2+1:2*N) = signal(N:-1:N/2+1);
-ext_signal = f_mirror;
+ext_signal = f_mirror; % extended signal = mirrored signal
 
 % Time Domain 0 to 1 (of mirrored signal)
 N_ext = length(ext_signal);
@@ -75,13 +79,13 @@ freqs = t-0.5-1/N_ext;
 % Maximum number of iterations (if not converged yet, then it won't anyway)
 max_it = 1000;
 
-% Initialization dual variables for bandwidth update
+% Initialization of Lagrange multipliers for bandwidth update
 rho_alpha = zeros(max_it, 1);
 rho_beta = zeros(max_it, 1);
 rho_alpha(1) = 1;
 rho_beta(1) = 16*K^2*(1/att_linear-1);
 
-% Construct and center f_hat
+% Construct and center the Fourier transform of mirrored signal
 f_hat = fftshift(fft(ext_signal));
 f_hat_plus = f_hat;
 f_hat_plus(1:N_ext/2) = 0; % Make negative freqs equal to zero
@@ -90,7 +94,7 @@ f_hat_plus = transpose(f_hat_plus);
 % Matrix keeping track of every iterant
 u_hat_plus = zeros(max_it, length(freqs), K);
 
-% Initialization of omega_k
+% Initialization of center frequencies (omega_k)
 omega_plus = zeros(max_it, K);
 omega_plus(1,:) = initializeCentralFreqs(init, K, f_hat_plus, freqs);
 
@@ -99,7 +103,7 @@ if DC
     omega_plus(1,1) = 0;
 end
 
-% Start with empty dual variables for reconstruction fidelity
+% Start with empty Lagrange multipliers for reconstruction fidelity
 lambda_hat = zeros(max_it, length(freqs));
 
 % Other inits
@@ -107,14 +111,14 @@ uDiff = tol+eps; % update step
 it = 1; % loop counter
 sum_uk = 0; % accumulator
 
-% Occupied BW
+% Occupied BW 99%
 ob = obw(signal, Fs);
 
 % Collective BW boundaties - alpha and beta
 alpha = 0;
 beta = ob/K;
 
-%% Viz figure
+%% Visualization figure
 method = "DB-VMD";
 if opts.viz_progress || opts.viz_end
     figure('Name', 'Visualization ' + method)
@@ -152,10 +156,10 @@ while ( uDiff > tol && it < max_it ) % not converged and below iterations limit
     % Collective bandwidth 
     collective_BW = K * 2 * sqrt((1/att_linear - 1) / (1 + rho_beta(it)-rho_alpha(it))) * Fs;
 
-    % Dual ascent
+    % Dual ascent - Reconstruction constraint
     lambda_hat(it+1,:) = lambda_hat(it,:) + tau_l*(sum(u_hat_plus(it+1,:,:),3) - f_hat_plus);
     
-    % Bandwidth update dual variables
+    % Dual ascent - Bandwidth constraint
     rho_alpha(it+1) = rho_alpha(it) + tau_ab*(alpha - collective_BW);
     rho_beta(it+1) = rho_beta(it) + tau_ab*(collective_BW - beta);
     
@@ -176,18 +180,15 @@ while ( uDiff > tol && it < max_it ) % not converged and below iterations limit
     
 end
 
-it = it - 1;
-
 % Vizualize end
 if opts.viz_end
     fprintf("DB-VMD iterations: %d\n", it)
     visualizationFunction(omega_plus(it,:), freqs, f_hat_plus, 1+rho_beta(it)-rho_alpha(it), method)
 end
 
-
 %% Postprocessing and cleanup
 
-% discard empty space if converged early
+% Discard empty space if converged early
 max_it = min(max_it,it);
 omega = omega_plus(1:max_it,:);
 
@@ -214,89 +215,81 @@ end
 
 end
 
-%% Functions 
+%% Functions for center frequency initialization
 function centralFreqs = initializeCentralFreqs(init, K, x, f)
-% Initialization of central frequencies
-switch init
-    case 0
-        centralFreqs = initialCentralFreqToZero(K);
-    case 1
-        centralFreqs = initialCentralFreqUniformally(K);
-    case 2
-        Ts = 1 / length(x);
-        centralFreqs = initialCentralFreqRandomly(K, Ts);
-    case 3
-        N_ext = length(f);
-        x = abs(x(N_ext/2+1:end));
-        f = f(N_ext/2+1:end);
-        centralFreqs = initialCentralFreqByFindPeaks(x, f, K);
-    otherwise
-        error("init is not between 0 and 3")
-end
+    % Initialization of central frequencies
+    switch init
+        case 0
+            centralFreqs = initialCentralFreqToZero(K);
+        case 1
+            centralFreqs = initialCentralFreqUniformally(K);
+        case 2
+            Ts = 1 / length(x);
+            centralFreqs = initialCentralFreqRandomly(K, Ts);
+        case 3
+            N_ext = length(f);
+            x = abs(x(N_ext/2+1:end));
+            f = f(N_ext/2+1:end);
+            centralFreqs = initialCentralFreqByFindPeaks(x, f, K);
+        otherwise
+            error("init is not between 0 and 3")
+    end
 end
 
 
 function centralFreqs = initialCentralFreqToZero(K)
-
-centralFreqs = zeros(1, K);
-
+    centralFreqs = zeros(1, K);
 end
 
 function centralFreqs = initialCentralFreqUniformally(K)
-
-centralFreqs = nan(K, 1);
-
-for i = 1:K
-    centralFreqs(i) = (0.5/K)*(i-1);
-end
-
+    centralFreqs = nan(K, 1);
+    for i = 1:K
+        centralFreqs(i) = (0.5/K)*(i-1);
+    end
 end
 
 
 function centralFreq = initialCentralFreqByFindPeaks(x,f,K)
-% Initialize central frequencies by finding the locations of signal peaks
-% in frequency domain by using findpeaks function. The number of peaks is
-% determined by NumIMFs.
-BW = 2/(length(f)); % bandwidth of signal
-minBWGapIndex = 2*BW/f(2);
+    % Initialize central frequencies by finding the locations of signal peaks
+    % in frequency domain by using findpeaks function. The number of peaks is
+    % determined by NumIMFs.
+    BW = 2/(length(f)); % bandwidth of signal
+    minBWGapIndex = 2*BW/f(2);
 
-x(x<mean(x)) = mean(x);
-TF = islocalmax(x,'MinSeparation',minBWGapIndex);
-pkst = x(TF);
-locst = f(TF);
-numpPeaks = length(pkst);
+    x(x<mean(x)) = mean(x);
+    TF = islocalmax(x,'MinSeparation',minBWGapIndex);
+    pkst = x(TF);
+    locst = f(TF);
+    numpPeaks = length(pkst);
 
-% Check for DC component
-if x(1) >= x(2)
-    pks = zeros(numpPeaks+1,1);
-    locs = pks;
-    pks(2:length(pkst)+1) = pkst;
-    locs(2:length(pkst)+1) = locst;
-    pks(1) = x(1);
-    locs(1) = f(1);
-else
-    pks = zeros(numpPeaks,1);
-    locs = pks;
-    pks(1:length(pkst)) = pkst;
-    locs(1:length(pkst)) = locst;
-end   
+    % Check for DC component
+    if x(1) >= x(2)
+        pks = zeros(numpPeaks+1,1);
+        locs = pks;
+        pks(2:length(pkst)+1) = pkst;
+        locs(2:length(pkst)+1) = locst;
+        pks(1) = x(1);
+        locs(1) = f(1);
+    else
+        pks = zeros(numpPeaks,1);
+        locs = pks;
+        pks(1:length(pkst)) = pkst;
+        locs(1:length(pkst)) = locst;
+    end   
 
-[~,index] = sort(pks,'descend');
-centralFreq = 0.5*rand(K,1);
+    [~,index] = sort(pks,'descend');
+    centralFreq = 0.5*rand(K,1);
 
-% Check if the number of peaks is less than number of IMFs
-if length(locs) < K
-    centralFreq(1:length(locs(index))) = locs;
-else
-    centralFreq(1:K) = locs(index(1:K));
-end
+    % Check if the number of peaks is less than number of IMFs
+    if length(locs) < K
+        centralFreq(1:length(locs(index))) = locs;
+    else
+        centralFreq(1:K) = locs(index(1:K));
+    end
 
-centralFreq = sort(centralFreq);
-
+    centralFreq = sort(centralFreq);
 end
 
 function centralFreqs = initialCentralFreqRandomly(K, Ts)
-
-centralFreqs = sort(exp(log(Ts) + (log(0.5)-log(Ts))*rand(1,K)));
-
+    centralFreqs = sort(exp(log(Ts) + (log(0.5)-log(Ts))*rand(1,K)));
 end

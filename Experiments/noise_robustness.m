@@ -1,3 +1,9 @@
+%% Noise robustness script for Dynamic Bandwidth VMD
+% -------------------------------------------------------------------------
+% Written by:
+% Andreas G. Angelou, aangelou@auth.gr
+% Tested with MATLAB R2020b
+% -------------------------------------------------------------------------
 %% Add "Method_Scripts" path
 % Method_Scripts is the folder where DB-VMD and VMD are implemeneted 
 
@@ -6,13 +12,13 @@ cd ..
 addpath('Method_Scripts') 
 cd(init_pwd)
 
-%% Preparations and parameters definition
+%% Preparation and parameters definition
 clear; clc; close all
 
 snr_arr = 20:-2:10;
-tau_l_arr = [0.1]; 
+tau_l_arr = [0.1, 0.5]; 
 
-max_it = 500; % Number of iterations
+max_it = 1500; % Number of iterations
 
 % Parameters
 alpha = 1000;   % VMD bandwidth factor
@@ -39,10 +45,10 @@ for i=1:K
     hann_windows(:, i) = temp;
 end
 
-
 % Success rate array for (iteration number, SNR, tau_l) combination
 SR_DB_vmd_arr = nan(max_it, length(snr_arr), length(tau_l_arr));
 SR_vmd_arr = nan(max_it, length(snr_arr), length(tau_l_arr));
+SR_classical_arr = nan(max_it, length(snr_arr), length(tau_l_arr));
 
 %% Noise robustness experiment
 for i_tau_l = 1:length(tau_l_arr)
@@ -52,7 +58,7 @@ for i_tau_l = 1:length(tau_l_arr)
         for it = 1:max_it
             
             % Printing progress
-            if mod(it, 50) == 0
+            if mod(it, 100) == 0
                 fprintf("iteration: %d/%d - SNR: %.2f (%d/%d) - tau_l: %.2f (%d/%d)\n", ...
                     it, max_it, ...
                     snr_arr(i_snr), i_snr, length(snr_arr), ...
@@ -65,8 +71,8 @@ for i_tau_l = 1:length(tau_l_arr)
             fsub = cell(K, 1);
             s = zeros(N, 1);
             for i=1:K
-                fsub{i} = hann_windows(:, i) .* A_arr(i) .* cos(omega_arr(i).*n);
-                s = s + hann_windows(:, i) .* A_arr(i) .* cos(omega_arr(i).*n);
+                fsub{i} = hann_windows(:, i) .* A_arr(i) .* cos(omega_arr(i).* n);
+                s = s + hann_windows(:, i) .* A_arr(i) .* cos(omega_arr(i).* n);
             end
             [~, sortIndex] = sort(omega_arr);
             fsub = fsub(sortIndex);
@@ -96,26 +102,41 @@ for i_tau_l = 1:length(tau_l_arr)
                 corr_arr(k) = xcorr(fsub{k}, u(k,:), 0, 'normalized');
             end
             SR_vmd_arr(it, i_snr, i_tau_l) = mean(corr_arr);
+            
+            
+            % Baseline approach applied
+            [u, ~, omega] = baseline(s, K);
+            [~, sortIndex] = sort(omega(end, :));
+            u = u(sortIndex, :);
+
+            % Baseline approach Success rate 
+            corr_arr = nan(K, 1);
+            for k=1:K
+                corr_arr(k) = xcorr(fsub{k}, u(k,:), 0, 'normalized');
+            end
+            SR_classical_arr(it, i_snr, i_tau_l) = mean(corr_arr);
         end
     end  
 end
 %% Results 
-
 % Plotting medians and Median Absolute Deviation (MAD)
-for i=1:length(tau_l_arr)
+for i_tau_l = 1:length(tau_l_arr)
     medians_vec_DB_VMD = median(SR_DB_vmd_arr(:, :, i_tau_l)); 
     mad_vec_DB_VMD = mad(SR_DB_vmd_arr(:, :, i_tau_l), 1); 
 
     medians_vec_VMD = median(SR_vmd_arr(:, :, i_tau_l)); 
     mad_vec_VMD = mad(SR_vmd_arr(:, :, i_tau_l), 1); 
     
+    medians_vec_baseline = median(SR_classical_arr(:, :, i_tau_l)); 
+    mad_vec_baseline = mad(SR_classical_arr(:, :, i_tau_l), 1); 
+    
     figure("Name", sprintf("tau_l = %.2f", tau_l_arr(i_tau_l)))
     h(1) = semilogx(snr_arr, medians_vec_DB_VMD, 'k-', 'LineWidth', 3);
     for j_snr = 1:length(snr_arr)
         hold on
         plot([snr_arr(j_snr) snr_arr(j_snr)], ...
-            [medians_vec_DB_VMD(j_snr) - mad_vec_DB_VMD(j_snr), ...
-            medians_vec_DB_VMD(j_snr) + mad_vec_DB_VMD(j_snr)], ...
+            [medians_vec_DB_VMD(j_snr) - 0.5*mad_vec_DB_VMD(j_snr), ...
+            medians_vec_DB_VMD(j_snr) + 0.5*mad_vec_DB_VMD(j_snr)], ...
             'k:_', 'LineWidth', 2)
     end
     hold on
@@ -123,16 +144,24 @@ for i=1:length(tau_l_arr)
     for j_snr = 1:length(snr_arr)
         hold on
         plot([snr_arr(j_snr) snr_arr(j_snr)], ...
-            [medians_vec_VMD(j_snr) - mad_vec_VMD(j_snr), ...
-            medians_vec_VMD(j_snr) + mad_vec_VMD(j_snr)], ...
+            [medians_vec_VMD(j_snr) - 0.5*mad_vec_VMD(j_snr), ...
+            medians_vec_VMD(j_snr) + 0.5*mad_vec_VMD(j_snr)], ...
             'b:_', 'LineWidth', 2)
     end
+    
+    h(3) = semilogx(snr_arr, medians_vec_baseline, 'r--v', 'LineWidth', 3);
+    for j_snr = 1:length(snr_arr)
+        hold on
+        plot([snr_arr(j_snr) snr_arr(j_snr)], ...
+            [medians_vec_baseline(j_snr) - 0.5*mad_vec_baseline(j_snr),...
+            medians_vec_baseline(j_snr) + 0.5*mad_vec_baseline(j_snr)],...
+            'r:_', 'LineWidth', 2)
+    end
+    
     xlabel("SNR (dB)", 'FontSize', 15)
     ylabel("Success Rate", 'FontSize', 20)
     xlim([min(snr_arr) - 0.1, max(snr_arr) + 0.1])
-    legend(h, "DB-VMD", "VMD", "Location", "Best", 'FontSize', 15)
+    legend(h, "DB-VMD", "VMD", "Baseline", "Location", "Best", 'FontSize', 15)
     title("Success Rate vs SNR", 'FontSize', 30)
     set(gca, 'XGrid', 'on', 'XMinorGrid', 'on');
 end
-
-
