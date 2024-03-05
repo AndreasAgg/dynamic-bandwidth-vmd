@@ -1,4 +1,4 @@
-# Dynamic Bandwidth Variational Mode Decomposition
+# Dynamic Bandwidth Variational Mode Decomposition (Accepted Paper ICASSP 2024)
 
 **Authors**: Andreas G. Angelou, Georgios K. Apostolidis, Leontios J. Hadjileontiadis
 
