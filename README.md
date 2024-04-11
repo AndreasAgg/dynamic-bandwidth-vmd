@@ -1,6 +1,7 @@
 # Dynamic Bandwidth Variational Mode Decomposition (Accepted Paper ICASSP 2024)
 
 **Authors**: Andreas G. Angelou, Georgios K. Apostolidis, Leontios J. Hadjileontiadis
+Paper link to the IEEE Xplore digital library: [https://ieeexplore.ieee.org/document/10447179](https://ieeexplore.ieee.org/document/10447179)
 
 **Brief introduction**: Dynamic Bandwidth Variational Mode Decomposition (DB-VMD) is a signal decomposition method and a generalization of Variational Mode Decomposition (VMD). In particualr, DB-VMD addresses the constant bandwidth Wiener filters limitation of VMD and proposes a scheme for Wiener filters with dynamic bandwidth. Experiments in synthetic signals underscore DB-VMD’s superior noise robustness and adaptability in comparison to VMD, paving the way for many applications, especially when the analyzed signals are contaminated with noise.
 
