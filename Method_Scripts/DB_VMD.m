@@ -26,6 +26,10 @@ function [u, u_hat, omega] = DB_VMD(signal, tau_ab, tau_l, K, DC, init, tol, opt
 % u       - the collection of decomposed modes
 % u_hat   - spectra of the modes
 % omega   - estimated mode center-frequencies
+%
+% When using this code, please cite this paper:
+% Angelou, A. G., Apostolidis, G. K., & Hadjileontiadis, L. J. (2024, April). Dynamic Bandwidth Variational Mode Decomposition. 
+% In ICASSP 2024-2024 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) (pp. 9571-9575). IEEE.
 
 %% Check inputs
 arguments
